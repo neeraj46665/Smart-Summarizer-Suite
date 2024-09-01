@@ -11,3 +11,4 @@ youtube-transcript-api
 langchain-cohere
 python-dotenv
 langchain-groq
+transformers
