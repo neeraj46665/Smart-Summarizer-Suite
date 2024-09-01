@@ -8,7 +8,7 @@ load_dotenv()
 
 
 
-os.environ["GOOGLE_API_KEY"]= os.getenv('GOOGLE_API_KEY')
+os.environ["COHERE_API_KEY"]= os.getenv('COHERE_API_KEY')
 os.environ['GROQ_API_KEY']=os.getenv('GROQ_API_KEY')
 
 
