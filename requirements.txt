@@ -1,0 +1,13 @@
+streamlit
+langchain-community
+cohere
+PyPDF2
+langchain-google-genai
+langchain
+pytube
+requests
+beautifulsoup4
+youtube-transcript-api
+langchain-cohere
+python-dotenv
+langchain-groq
