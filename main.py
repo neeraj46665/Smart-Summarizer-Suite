@@ -1,139 +1,122 @@
-import os
 import streamlit as st
-from pdf_summarizer import pdf_summarizer
-from news_summarizer import news_summarizer
-from youtube_summarizer import youtube_summarizer
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.chains.summarize import load_summarize_chain
+from langchain_groq import ChatGroq
+from langchain_core.prompts import PromptTemplate
+from langchain.document_loaders import YoutubeLoader
+import os
 from dotenv import load_dotenv
+
+# Load environment variables
 load_dotenv()
 
+# Set up the language model with API key
+os.environ['GROQ_API_KEY'] = os.getenv('GROQ_API_KEY')
+llm = ChatGroq(model='llama-3.1-70b-versatile')
+
+# List of top 10 most spoken languages with their codes
+top_languages = [
+    ("English", "en"),
+    ("Mandarin Chinese", "zh"),
+    ("Hindi", "hi"),
+    ("Spanish", "es"),
+    ("French", "fr"),
+    ("Standard Arabic", "ar"),
+    ("Bengali", "bn"),
+    ("Portuguese", "pt"),
+    ("Russian", "ru"),
+    ("Japanese", "ja"),
+]
+
+# Main function for YouTube summarizer
+def youtube_summarizer():
+    st.title("YouTube Video Summarizer")
 
 
-os.environ["COHERE_API_KEY"]= os.getenv('COHERE_API_KEY')
-os.environ['GROQ_API_KEY']=os.getenv('GROQ_API_KEY')
+    # Input YouTube URL
+    youtube_url = st.text_input("Enter YouTube URL:")
 
-
-
-
-
-def main():
-    # Sidebar with unique key
-    selected_option = st.sidebar.radio(
-        "Choose a summarizer:",
-        ("📄 PDF/Text Summarizer", "📰 News Summarizer", "🎥 YouTube Summarizer"),
-        key='summarizer_selector'
+    # Dropdown for language selection
+    language = st.selectbox(
+        "Select the language for summarization:",
+        [lang_name for lang_name, _ in top_languages]
     )
 
-    # Get the current theme color
-    background_color = "#e6f2ff" 
+    # Button to generate summary
+    if st.button("Generate Summary"):
+        if youtube_url:
+            with st.spinner("Loading transcript, fetching thumbnail, and generating summary..."):
+                
+                    # Load video data using YoutubeLoader
+                    loader = YoutubeLoader.from_youtube_url(youtube_url, add_video_info=True,
+                                                            language=["en", "hi"])
+                    
 
-    # Apply styling to sidebar
-    st.sidebar.markdown(
-        f"""
-        <style>
-        .sidebar .sidebar-content {{
-            background-color: {background_color};
-            padding: 10px;
-            border-radius: 10px;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+                    documents = loader.load()
 
-    # Main title with a custom style
-    st.markdown(
-        f"""
-        <h1 style='text-align: center; color: #4B89DC; font-weight: bold;'>📝 Summarizer App</h1>
-        """,
-        unsafe_allow_html=True
-    )
+                    # Assuming the first document contains the relevant data
+                    video_doc = documents[0]
 
-    # Display welcome message and app description
-    if selected_option == "📄 PDF/Text Summarizer":
-        st.markdown(
-            f"""
-            <div style='background-color: {background_color}; padding: 15px; border-radius: 10px;color:black'>
-            <h2 style='color:black' >Welcome to the Summarizer App!</h2>
-            <p >This tool helps you quickly summarize PDFs, news articles, and YouTube videos using advanced AI models.</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+                    # Extract video metadata
+                    video_title = video_doc.metadata.get('title', 'Unknown Title')
+                    thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
 
-    # Sidebar with options and additional information
-    st.sidebar.title("Navigation")
+                    
+                    
+                    # Display video title
+                    st.subheader(video_title)
 
-    # Sidebar section for About
-    st.sidebar.header("About")
-    st.sidebar.markdown(
-        f"""
-        <div style='background-color: {background_color}; padding: 15px; border-radius: 10px;color:black''>
-        <p >This app was made by <strong>Neeraj Singh</strong> and <strong>Faisal Hussain</strong>.</p>
-        <p >It uses state-of-the-art AI models from <strong>Cohere</strong> and <strong>Google</strong> to provide concise summaries of text, news articles, and video content.</p>
-        <p >Simply select the content type from the options above, upload or paste your content, and get a summary in seconds!</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+                    # Load Transcript in the selected language
+                    
+                    transcript = documents
+               
 
-    # Set background color variable
-    background_color = "#e6f2ff"  # Light blue color for background
+                    # Check if transcript is available
+                    if not transcript:
+                        st.warning("No transcript available in the selected language.")
+                        return
 
-    # Sidebar section for User Guide with background styling
-    st.sidebar.header("User Guide")
-    st.sidebar.markdown(
-        f"""
-        <div style='background-color: {background_color}; padding: 15px; border-radius: 10px; color:black;'>
-            <p><strong>How to Use:</strong></p>
-            <p>1. <strong>Select Input Method:</strong> Choose between uploading a PDF or entering text.</p>
-            <p>2. <strong>Generate Summary:</strong> Click on 'Generate Summary' to process the input.</p>
-            <p>3. <strong>View Output:</strong> The summarized text will appear below the input section.</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+                    # Split Transcript into chunks
+                    text_splitter = RecursiveCharacterTextSplitter(chunk_size=100000, chunk_overlap=10000, add_start_index=True)
+                    chunks = text_splitter.split_documents(transcript)
+
+                    # Prepare prompts
+                    chunk_prompt = "Break down the following text into key points and highlight the most critical information for each section: Text: '{text}' Key Points:"
 
 
+                    map_prompt_template = PromptTemplate(input_variables=['text'], template=chunk_prompt)
+                    
+                    final_prompt = '''
+Provide a comprehensive summary of the key points in the specified language ({language}). First, list the key points as a breakdown, then synthesize these points into a clear and concise summary. TEXT: {text}
+'''
 
 
-    # Display the appropriate summarizer based on the selected option
-    if selected_option == "📄 PDF/Text Summarizer":
-        st.subheader("📄 PDF/Text Summarizer")
-        st.markdown("Upload a PDF file or paste your text, and get a summarized version of the content.")
-        pdf_summarizer()
-    elif selected_option == "📰 News Summarizer":
-        st.subheader("📰 News Summarizer")
-        st.markdown(
-            f"""
-            <div style='background-color: {background_color}; padding: 15px; border-radius: 10px; color:black''>
-            Fetch the latest news articles and get a summarized overview.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        news_summarizer()
-    elif selected_option == "🎥 YouTube Summarizer":
-        st.subheader("🎥 YouTube Summarizer")
-        st.markdown(
-            f"""
-            <div style='background-color: {background_color}; padding: 15px; border-radius: 10px;color:black''>
-            Paste a YouTube video URL and get a summarized version of the content.
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        youtube_summarizer()
+                    final_prompt_template = PromptTemplate(input_variables=['text', 'language'], template=final_prompt)
 
-    # Footer with contact information and credits
-    st.markdown(
-        """
-        <hr style="border-top: 1px solid #e6e6e6;">
-        <div style='text-align: center;'>
-            <p >Made with ❤️ by Neeraj Singh and Faisal Hussain</p>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+                    # Load summarization chain
+                    chain = load_summarize_chain(
+                        llm=llm,
+                        chain_type='map_reduce',
+                        map_prompt=map_prompt_template,
+                        combine_prompt=final_prompt_template,
+                        verbose=True
+                    )
+                  
+                    
 
+                    # Display video thumbnail
+                    st.image(thumbnail_url, use_column_width=True)
+
+                    # Generate and display the full summary
+                    summary = chain.run({"input_documents": chunks, "language": language})
+                    st.subheader(f"Summary (in {language}):")
+                    st.success(summary)
+
+               
+        else:
+            st.warning("Please enter a valid YouTube URL.")
+
+
+# Run the app
 if __name__ == "__main__":
-    main()
+    youtube_summarizer()
