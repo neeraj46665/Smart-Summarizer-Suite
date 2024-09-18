@@ -53,12 +53,21 @@ def youtube_summarizer():
 
                     documents = loader.load()
 
-                    # Assuming the first document contains the relevant data
-                    video_doc = documents[0]
+                    # # Assuming the first document contains the relevant data
+                    # video_doc = documents[0]
 
-                    # Extract video metadata
-                    video_title = video_doc.metadata.get('title', 'Unknown Title')
-                    thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
+                    # # Extract video metadata
+                    # video_title = video_doc.metadata.get('title', 'Unknown Title')
+                    # thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
+
+                    document_dict = dict(documents[0])
+              
+                    # Access the metadata dictionary
+                    metadata = document_dict['metadata']
+
+                    # Fetch the required information
+                    video_title = metadata['title']
+                    thumbnail_url = metadata['thumbnail_url']
 
                     
                     
