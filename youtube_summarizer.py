@@ -53,22 +53,16 @@ def youtube_summarizer():
 
                     documents = loader.load()
 
-                    # # Assuming the first document contains the relevant data
-                    # video_doc = documents[0]
-
-                    # # Extract video metadata
-                    # video_title = video_doc.metadata.get('title', 'Unknown Title')
-                    # thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
+                    # Assuming the first document contains the relevant data
+                    
+                    video_doc = documents[0]
+                    
+                    
+                    # Extract video metadata
+                    video_title = video_doc.metadata.get('title', 'Unknown Title')
+                    thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
 
               
-                    document_dict = documents[0].__dict__
-        
-                    # Access the metadata dictionary
-                    metadata = document_dict['metadata']
-                    
-                    # Fetch specific information
-                    video_title = metadata.get('title', 'Unknown Title')
-                    thumbnail_url = metadata.get('thumbnail_url', 'Unknown Thumbnail')
 
                     
                     
@@ -118,6 +112,7 @@ Provide a comprehensive summary of the key points in the specified language ({la
 
                     # Generate and display the full summary
                     summary = chain.run({"input_documents": chunks, "language": language})
+                 
                     st.subheader(f"Summary (in {language}):")
                     st.success(summary)
 
