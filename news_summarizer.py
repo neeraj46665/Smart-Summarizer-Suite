@@ -24,12 +24,12 @@ def scrape_news_from_class(homepage_url):
         news_list = []
         
         # First news with different class
-        first_article = soup.find('div', class_='cartHolder bigCart track timeAgo articleClick')
+        first_article = soup.find('div', class_='cartHolder bigCart track timeAgo')
         if first_article:
             news_list.append(parse_article(first_article))
         
         # Rest of the news with common class
-        articles = soup.find_all('div', class_='cartHolder listView track timeAgo articleClick')
+        articles = soup.find_all('div', class_='cartHolder listView track timeAgo')
         for article in articles:
             news_list.append(parse_article(article))
         
