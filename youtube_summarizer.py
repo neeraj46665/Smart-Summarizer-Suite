@@ -1,9 +1,10 @@
 import streamlit as st
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from pytube import YouTube
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import YoutubeLoader
 from langchain.chains.summarize import load_summarize_chain
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
-from langchain.document_loaders import YoutubeLoader
 import os
 from dotenv import load_dotenv
 
@@ -14,7 +15,7 @@ load_dotenv()
 os.environ['GROQ_API_KEY'] = os.getenv('GROQ_API_KEY')
 llm = ChatGroq(model='llama-3.1-70b-versatile')
 
-# List of top 10 most spoken languages with their codes
+# List of top 10 most spoken languages
 top_languages = [
     ("English", "en"),
     ("Mandarin Chinese", "zh"),
@@ -41,34 +42,25 @@ def youtube_summarizer():
         [lang_name for lang_name, _ in top_languages]
     )
 
+    # Map the selected language name to its code
+    language_code = dict(top_languages)[language]
+
     # Button to generate summary
     if st.button("Generate Summary"):
         if youtube_url:
             with st.spinner("Loading transcript, fetching thumbnail, and generating summary..."):
-                
-                    # Load video data using YoutubeLoader
-                    loader = YoutubeLoader.from_youtube_url(youtube_url, add_video_info=True,
-                                                            language=["en", "hi"])
-                    
+                try:
+                    # Get video details using PyTube
+                    yt = YouTube(youtube_url)
+                    video_title = yt.title
+                    thumbnail_url = yt.thumbnail_url
 
-                    documents = loader.load()
-
-                    # Assuming the first document contains the relevant data
-                    video_doc = documents[0]
-
-                    # Extract video metadata
-                    video_title = video_doc.metadata.get('title', 'Unknown Title')
-                    thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
-
-                    
-                    
                     # Display video title
                     st.subheader(video_title)
 
                     # Load Transcript in the selected language
-                    
-                    transcript = documents
-               
+                    loader = YoutubeLoader.from_youtube_url(youtube_url, language=["hi", "en", "en-US"])
+                    transcript = loader.load()
 
                     # Check if transcript is available
                     if not transcript:
@@ -111,11 +103,15 @@ Provide a comprehensive summary of the key points in the specified language ({la
                     st.subheader(f"Summary (in {language}):")
                     st.success(summary)
 
-               
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
         else:
             st.warning("Please enter a valid YouTube URL.")
 
-
-# Run the app
 if __name__ == "__main__":
     youtube_summarizer()
+
+
+
+
+
