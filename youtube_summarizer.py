@@ -34,7 +34,8 @@ top_languages = [
 @backoff.on_exception(backoff.expo, (pytube.exceptions.PytubeError, ValueError), max_time=60)
 def fetch_youtube_data(youtube_url):
     # Load video data using YoutubeLoader
-    loader = YoutubeLoader.from_youtube_url(youtube_url, add_video_info=True)
+    loader = YoutubeLoader.from_youtube_url(youtube_url, add_video_info=True,
+                                                            language=["en", "hi"])
     documents = loader.load()
     if not documents:
         raise ValueError("No documents found.")
