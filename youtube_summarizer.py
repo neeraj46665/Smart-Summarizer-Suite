@@ -3,11 +3,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
+import pytube
 from langchain_community.document_loaders import YoutubeLoader
 import os
 from dotenv import load_dotenv
 import backoff  # Import the backoff library
-from pytube import YouTube
+
 # Load environment variables
 load_dotenv()
 
