@@ -7,7 +7,7 @@ from langchain_community.document_loaders import YoutubeLoader
 import os
 from dotenv import load_dotenv
 import backoff  # Import the backoff library
-
+from pytube import YouTube
 # Load environment variables
 load_dotenv()
 
