@@ -12,3 +12,4 @@ langchain-cohere
 python-dotenv
 langchain-groq
 transformers
+backoff
