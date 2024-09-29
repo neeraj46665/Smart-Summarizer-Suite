@@ -72,7 +72,7 @@ def youtube_summarizer():
                     # Load Transcript in the selected language
                     
                     transcript = documents
-                    st.write(transcript)
+                   
                
 
                     # Check if transcript is available
