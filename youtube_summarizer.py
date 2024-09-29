@@ -52,11 +52,12 @@ def youtube_summarizer():
                     
 
                     documents = loader.load()
+                    st.write(type(documents))
                     st.write(documents)
 
                     # Assuming the first document contains the relevant data
                     
-                    # video_doc = documents[0]
+#                     video_doc = documents[0]
                     
                     
 #                     # Extract video metadata
