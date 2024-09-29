@@ -31,7 +31,7 @@ top_languages = [
 ]
 
 # Retry logic for fetching YouTube data
-@backoff.on_exception(backoff.expo, (pytube.exceptions.PytubeError, ValueError), max_time=60)
+@backoff.on_exception(backoff.expo, (pytube.exceptions.PytubeError, ValueError), max_time=10)
 def fetch_youtube_data(youtube_url):
     # Load video data using YoutubeLoader
     loader = YoutubeLoader.from_youtube_url(youtube_url, add_video_info=True,
