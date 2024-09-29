@@ -3,11 +3,9 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.chains.summarize import load_summarize_chain
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
-import pytube
-from langchain_community.document_loaders import YoutubeLoader
+from langchain.document_loaders import YoutubeLoader
 import os
 from dotenv import load_dotenv
-import backoff  # Import the backoff library
 
 # Load environment variables
 load_dotenv()
@@ -30,17 +28,6 @@ top_languages = [
     ("Japanese", "ja"),
 ]
 
-# Retry logic for fetching YouTube data
-@backoff.on_exception(backoff.expo, (pytube.exceptions.PytubeError, ValueError), max_time=10)
-def fetch_youtube_data(youtube_url):
-    # Load video data using YoutubeLoader
-    loader = YoutubeLoader.from_youtube_url(youtube_url, add_video_info=True,
-                                                            language=["en", "hi"])
-    documents = loader.load()
-    if not documents:
-        raise ValueError("No documents found.")
-    return documents
-
 # Main function for YouTube summarizer
 def youtube_summarizer():
     st.title("YouTube Video Summarizer")
@@ -58,20 +45,35 @@ def youtube_summarizer():
     if st.button("Generate Summary"):
         if youtube_url:
             with st.spinner("Loading transcript, fetching thumbnail, and generating summary..."):
-                try:
-                    # Fetch YouTube data with retry logic
-                    documents = fetch_youtube_data(youtube_url)
+                
+                    # Load video data using YoutubeLoader
+                    loader = YoutubeLoader.from_youtube_url(youtube_url, add_video_info=True,
+                                                            language=["en", "hi"])
+                    
 
-                    # Extract video metadata
+                    documents = loader.load()
+
+                    # Assuming the first document contains the relevant data
+                    
                     video_doc = documents[0]
+                    
+                    
+                    # Extract video metadata
                     video_title = video_doc.metadata.get('title', 'Unknown Title')
                     thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
 
+              
+
+                    
+                    
                     # Display video title
                     st.subheader(video_title)
 
                     # Load Transcript in the selected language
+                    
                     transcript = documents
+                    st.write(transcript)
+               
 
                     # Check if transcript is available
                     if not transcript:
@@ -84,11 +86,15 @@ def youtube_summarizer():
 
                     # Prepare prompts
                     chunk_prompt = "Break down the following text into key points and highlight the most critical information for each section: Text: '{text}' Key Points:"
-                    map_prompt_template = PromptTemplate(input_variables=['text'], template=chunk_prompt)
 
+
+                    map_prompt_template = PromptTemplate(input_variables=['text'], template=chunk_prompt)
+                    
                     final_prompt = '''
 Provide a comprehensive summary of the key points in the specified language ({language}). First, list the key points as a breakdown, then synthesize these points into a clear and concise summary. TEXT: {text}
 '''
+
+
                     final_prompt_template = PromptTemplate(input_variables=['text', 'language'], template=final_prompt)
 
                     # Load summarization chain
@@ -99,22 +105,22 @@ Provide a comprehensive summary of the key points in the specified language ({la
                         combine_prompt=final_prompt_template,
                         verbose=True
                     )
+                  
+                    
 
                     # Display video thumbnail
-                    if thumbnail_url:
-                        st.image(thumbnail_url, use_column_width=True)
+                    st.image(thumbnail_url, use_column_width=True)
 
                     # Generate and display the full summary
                     summary = chain.run({"input_documents": chunks, "language": language})
-
+                 
                     st.subheader(f"Summary (in {language}):")
                     st.success(summary)
 
-                except Exception as e:
-                    st.error(f"An error occurred: {str(e)}")
-
+               
         else:
             st.warning("Please enter a valid YouTube URL.")
+
 
 # Run the app
 if __name__ == "__main__":
