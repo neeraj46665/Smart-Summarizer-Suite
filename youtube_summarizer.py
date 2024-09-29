@@ -52,74 +52,75 @@ def youtube_summarizer():
                     
 
                     documents = loader.load()
+                    st.write(documents)
 
                     # Assuming the first document contains the relevant data
                     
-                    video_doc = documents[0]
+#                     video_doc = documents[0]
                     
                     
-                    # Extract video metadata
-                    video_title = video_doc.metadata.get('title', 'Unknown Title')
-                    thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
+#                     # Extract video metadata
+#                     video_title = video_doc.metadata.get('title', 'Unknown Title')
+#                     thumbnail_url = video_doc.metadata.get('thumbnail_url', '')
 
               
 
                     
                     
-                    # Display video title
-                    st.subheader(video_title)
+#                     # Display video title
+#                     st.subheader(video_title)
 
-                    # Load Transcript in the selected language
+#                     # Load Transcript in the selected language
                     
-                    transcript = documents
+#                     transcript = documents
                    
                
 
-                    # Check if transcript is available
-                    if not transcript:
-                        st.warning("No transcript available in the selected language.")
-                        return
+#                     # Check if transcript is available
+#                     if not transcript:
+#                         st.warning("No transcript available in the selected language.")
+#                         return
 
-                    # Split Transcript into chunks
-                    text_splitter = RecursiveCharacterTextSplitter(chunk_size=100000, chunk_overlap=10000, add_start_index=True)
-                    chunks = text_splitter.split_documents(transcript)
+#                     # Split Transcript into chunks
+#                     text_splitter = RecursiveCharacterTextSplitter(chunk_size=100000, chunk_overlap=10000, add_start_index=True)
+#                     chunks = text_splitter.split_documents(transcript)
 
-                    # Prepare prompts
-                    chunk_prompt = "Break down the following text into key points and highlight the most critical information for each section: Text: '{text}' Key Points:"
+#                     # Prepare prompts
+#                     chunk_prompt = "Break down the following text into key points and highlight the most critical information for each section: Text: '{text}' Key Points:"
 
 
-                    map_prompt_template = PromptTemplate(input_variables=['text'], template=chunk_prompt)
+#                     map_prompt_template = PromptTemplate(input_variables=['text'], template=chunk_prompt)
                     
-                    final_prompt = '''
-Provide a comprehensive summary of the key points in the specified language ({language}). First, list the key points as a breakdown, then synthesize these points into a clear and concise summary. TEXT: {text}
-'''
+#                     final_prompt = '''
+# Provide a comprehensive summary of the key points in the specified language ({language}). First, list the key points as a breakdown, then synthesize these points into a clear and concise summary. TEXT: {text}
+# '''
 
 
-                    final_prompt_template = PromptTemplate(input_variables=['text', 'language'], template=final_prompt)
+#                     final_prompt_template = PromptTemplate(input_variables=['text', 'language'], template=final_prompt)
 
-                    # Load summarization chain
-                    chain = load_summarize_chain(
-                        llm=llm,
-                        chain_type='map_reduce',
-                        map_prompt=map_prompt_template,
-                        combine_prompt=final_prompt_template,
-                        verbose=True
-                    )
+#                     # Load summarization chain
+#                     chain = load_summarize_chain(
+#                         llm=llm,
+#                         chain_type='map_reduce',
+#                         map_prompt=map_prompt_template,
+#                         combine_prompt=final_prompt_template,
+#                         verbose=True
+#                     )
                   
                     
 
-                    # Display video thumbnail
-                    st.image(thumbnail_url, use_column_width=True)
+#                     # Display video thumbnail
+#                     st.image(thumbnail_url, use_column_width=True)
 
-                    # Generate and display the full summary
-                    summary = chain.run({"input_documents": chunks, "language": language})
+#                     # Generate and display the full summary
+#                     summary = chain.run({"input_documents": chunks, "language": language})
                  
-                    st.subheader(f"Summary (in {language}):")
-                    st.success(summary)
+#                     st.subheader(f"Summary (in {language}):")
+#                     st.success(summary)
 
                
-        else:
-            st.warning("Please enter a valid YouTube URL.")
+#         else:
+#             st.warning("Please enter a valid YouTube URL.")
 
 
 # Run the app
