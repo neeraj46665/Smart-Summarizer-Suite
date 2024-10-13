@@ -114,71 +114,71 @@ def youtube_summarizer():
                     loader = YoutubeLoader.from_youtube_url(youtube_url,language=["en", "hi"], add_video_info=True)
                     # Load the transcript
                     transcript = loader.load()
-                    print(transcript)
-                    print(transcript[0].metadata['title'])
-                    print(transcript[0].metadata['thumbnail_url'])
                     
-#                     video_title, thumbnail_url, transcript = get_youtube_video_details(youtube_url)
-#                     # Display video title
-#                     st.subheader(video_title)
+                    video_title=transcript[0].metadata['title']
+                    thumbnail_url=transcript[0].metadata['thumbnail_url']
+                    
+                    # video_title, thumbnail_url, transcript = get_youtube_video_details(youtube_url)
+                    # Display video title
+                    st.subheader(video_title)
 
-#                     # Load Transcript in the selected language
+                    # Load Transcript in the selected language
                     
-#                     documents = [
-#                                     Document(
-#                                         page_content=transcript,
-#                                         metadata={"source": youtube_url, "title": video_title}
-#                                     )
+                    # documents = [
+                    #                 Document(
+                    #                     page_content=transcript,
+                    #                     metadata={"source": youtube_url, "title": video_title}
+                    #                 )
                                     
-#                                 ]
-#                     transcript = documents
+                    #             ]
+                    # transcript = documents
                
 
-#                     # Check if transcript is available
-#                     if not transcript:
-#                         st.warning("No transcript available in the selected language.")
-#                         return
+                    # Check if transcript is available
+                    if not transcript:
+                        st.warning("No transcript available in the selected language.")
+                        return
 
-# #                     # Split Transcript into chunks
-#                     text_splitter = RecursiveCharacterTextSplitter(chunk_size=100000, chunk_overlap=10000, add_start_index=True)
-#                     chunks = text_splitter.split_documents(transcript)
+#                     # Split Transcript into chunks
+                    text_splitter = RecursiveCharacterTextSplitter(chunk_size=100000, chunk_overlap=10000, add_start_index=True)
+                    chunks = text_splitter.split_documents(transcript)
 
-#                     # Prepare prompts
-#                     chunk_prompt = "Break down the following text into key points and highlight the most critical information for each section: Text: '{text}' Key Points:"
+                    # Prepare prompts
+                    chunk_prompt = "Break down the following text into key points and highlight the most critical information for each section: Text: '{text}' Key Points:"
 
 
-#                     map_prompt_template = PromptTemplate(input_variables=['text'], template=chunk_prompt)
+                    map_prompt_template = PromptTemplate(input_variables=['text'], template=chunk_prompt)
                     
-#                     final_prompt = '''
-# Provide a comprehensive summary of the key points in the specified language ({language}). First, list the key points as a breakdown, then synthesize these points into a clear and concise summary. TEXT: {text}
-# '''
+                    final_prompt = '''
+Provide a comprehensive summary of the key points in the specified language ({language}). First, list the key points as a breakdown, then synthesize these points into a clear and concise summary. TEXT: {text}
+'''
 
 
-#                     final_prompt_template = PromptTemplate(input_variables=['text', 'language'], template=final_prompt)
+                    final_prompt_template = PromptTemplate(input_variables=['text', 'language'], template=final_prompt)
 
-#                     # Load summarization chain
-#                     chain = load_summarize_chain(
-#                         llm=llm,
-#                         chain_type='map_reduce',
-#                         map_prompt=map_prompt_template,
-#                         combine_prompt=final_prompt_template,
-#                         verbose=False
-#                     )
+                    # Load summarization chain
+                    chain = load_summarize_chain(
+                        llm=llm,
+                        chain_type='map_reduce',
+                        map_prompt=map_prompt_template,
+                        combine_prompt=final_prompt_template,
+                        verbose=False
+                    )
                   
                     
 
-#                     # Display video thumbnail
-#                     st.image(thumbnail_url, use_column_width=True)
+                    # Display video thumbnail
+                    st.image(thumbnail_url, use_column_width=True)
 
-#                     # Generate and display the full summary
-#                     summary = chain.run({"input_documents": chunks, "language": language})
+                    # Generate and display the full summary
+                    summary = chain.run({"input_documents": chunks, "language": language})
                  
-#                     st.subheader(f"Summary (in {language}):")
-#                     st.success(summary)
+                    st.subheader(f"Summary (in {language}):")
+                    st.success(summary)
 
                
-#         else:
-#             st.warning("Please enter a valid YouTube URL.")
+        else:
+            st.warning("Please enter a valid YouTube URL.")
 
 
 # Run the app
