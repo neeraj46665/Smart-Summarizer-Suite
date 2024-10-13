@@ -111,27 +111,27 @@ def youtube_summarizer():
                     
 
                     # loader = YoutubeLoader('O0dRSA8b5tk',language=["en", "hi"])
-                    loader = YoutubeLoader.from_youtube_url(youtube_url,language=["en", "hi"], add_video_info=True)
-                    # Load the transcript
-                    transcript = loader.load()
+                    # loader = YoutubeLoader.from_youtube_url(youtube_url,language=["en", "hi"], add_video_info=True)
+                    # # Load the transcript
+                    # transcript = loader.load()
                     
-                    video_title=transcript[0].metadata['title']
-                    thumbnail_url=transcript[0].metadata['thumbnail_url']
+                    # video_title=transcript[0].metadata['title']
+                    # thumbnail_url=transcript[0].metadata['thumbnail_url']
                     
-                    # video_title, thumbnail_url, transcript = get_youtube_video_details(youtube_url)
+                    video_title, thumbnail_url, transcript = get_youtube_video_details(youtube_url)
                     # Display video title
                     st.subheader(video_title)
 
                     # Load Transcript in the selected language
                     
-                    # documents = [
-                    #                 Document(
-                    #                     page_content=transcript,
-                    #                     metadata={"source": youtube_url, "title": video_title}
-                    #                 )
+                    documents = [
+                                    Document(
+                                        page_content=transcript,
+                                        metadata={"source": youtube_url, "title": video_title}
+                                    )
                                     
-                    #             ]
-                    # transcript = documents
+                                ]
+                    transcript = documents
                
 
                     # Check if transcript is available
