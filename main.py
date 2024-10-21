@@ -2,7 +2,7 @@ import os
 import streamlit as st
 from pdf_summarizer import pdf_summarizer
 from news_summarizer import news_summarizer
-from youtube_code2_cloud.py import youtube_summarizer
+from youtube_code2_cloud import youtube_summarizer
 
 from dotenv import load_dotenv
 load_dotenv()
