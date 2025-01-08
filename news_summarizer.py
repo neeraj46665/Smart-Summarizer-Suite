@@ -114,7 +114,7 @@ def news_summarizer():
             st.subheader(news['title'])
         
             if news['image_url'] and news['image_url'] != 'No image found':
-                st.image(news['image_url'], use_column_width=True)
+                st.image(news['image_url'], use_container_width=True)
             else:
                 st.write("No image available")
 
