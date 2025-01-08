@@ -153,7 +153,7 @@ Provide a comprehensive summary of the key points in the specified language ({la
                 )
 
                 # Display video thumbnail
-                st.image(thumbnail_url, use_column_width=True)
+                st.image(thumbnail_url, use_container_width=True)
 
                 # # Generate and display the full summary
                 summary = chain.run({"input_documents": chunks, "language": language})
