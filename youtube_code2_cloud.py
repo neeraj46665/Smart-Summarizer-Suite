@@ -66,7 +66,7 @@ load_dotenv()
 
 # Set up the language model with API key
 os.environ['GROQ_API_KEY'] = os.getenv('GROQ_API_KEY')
-llm = ChatGroq(model='llama-3.1-70b-versatile')
+llm = ChatGroq(model='deepseek-r1-distill-qwen-32b')
 
 # List of top 10 most spoken languages with their codes
 top_languages = [
